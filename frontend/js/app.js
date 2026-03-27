@@ -1,13 +1,23 @@
 // API PHP para prototipo desarrollado con XAMPP
-const API = "../backend/api.php/products";
+const API = "../backend/api.php?resource=products";
 
 const form = document.getElementById("productForm");
 const mensajeEl = document.getElementById("mensaje");
 const productsGrid = document.getElementById("productsGrid");
 const statsEl = document.getElementById("stats");
-const filterStatus = document.getElementById("filterStatus");
+const statusTabs = document.querySelectorAll(".status-tab");
 
 let products = [];
+let currentStatus = "all";
+
+statusTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+        statusTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentStatus = tab.getAttribute("data-status");
+        loadProducts();
+    });
+});
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -72,7 +82,7 @@ async function deleteProduct(id) {
     const clave = confirm("¿Eliminar este producto del inventario?");
     if (!clave) return;
 
-    const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+    const res = await fetch(`../backend/api.php?resource=products&id=${id}`, { method: "DELETE" });
     if (res.ok) {
         showMessage("Producto eliminado", "success");
         await loadProducts();
@@ -86,42 +96,59 @@ async function loadProducts() {
     const res = await fetch(API);
     products = await res.json();
 
-    const statusFilter = filterStatus.value;
     const stockCritico = Number(document.getElementById("stockCritico").value) || 5;
-
     productsGrid.innerHTML = "";
 
     const summary = { total: 0, vigente: 0, por_vencer: 0, vencido: 0, critic: 0 };
 
-    products
+    const filtered = products
         .map((p) => ({ ...p, status: getStatus(p), diasRestantes: Math.ceil((new Date(p.vencimiento + "T23:59:59") - new Date()) / (1000 * 60 * 60 * 24)) }))
-        .filter((p) => statusFilter === "all" || p.status === statusFilter)
-        .forEach((product) => {
-            summary.total += 1;
-            summary[product.status] += 1;
-            if (isCritical(product, stockCritico)) summary.critic += 1;
+        .filter((p) => currentStatus === "all" || p.status === currentStatus);
 
-            const card = document.createElement("article");
-            card.className = `product-card status-${product.status} ${isCritical(product, stockCritico) ? "critical" : ""}`;
+    filtered.forEach((product) => {
+        summary.total += 1;
+        summary[product.status] += 1;
+        if (isCritical(product, stockCritico)) summary.critic += 1;
 
-            const badge = product.status === "vigente" ? "Vigente" : product.status === "por_vencer" ? "Por vencer" : "Vencido";
-            const dias = product.diasRestantes;
-            const dayText = dias < 0 ? `${Math.abs(dias)} días atrás` : `${dias} días`;
+        const tr = document.createElement("tr");
+        const badge = product.status === "vigente" ? "Vigente" : product.status === "por_vencer" ? "Por vencer" : "Vencido";
+        const dias = product.diasRestantes;
+        const dayText = dias < 0 ? `${Math.abs(dias)} días atrás` : `${dias} días`;
 
-            card.innerHTML = `
-                <h3>${product.nombre}</h3>
-                <p>Cantidad: ${product.cantidad}</p>
-                <p>Vence: ${product.vencimiento} (${dayText})</p>
-                <p class="status-pill status-${product.status}">${badge}</p>
-                <div class="actions">
-                    <button class="btn-danger" onclick="deleteProduct(${product.id})">Eliminar</button>
-                </div>
-            `;
+        tr.innerHTML = `
+            <td>${product.nombre}</td>
+            <td>${product.cantidad}</td>
+            <td>${product.vencimiento} <span class="small-text">(${dayText})</span></td>
+            <td><span class="status-pill status-${product.status}">${badge}</span></td>
+            <td><button class="btn-danger small" onclick="deleteProduct(${product.id})">Eliminar</button></td>
+        `;
 
-            productsGrid.appendChild(card);
+        tr.classList.add('row-enter');
+        productsGrid.appendChild(tr);
+        window.requestAnimationFrame(() => {
+            tr.classList.add('row-enter-active');
         });
+    });
+
+    if (filtered.length === 0) {
+        const emptyRow = document.createElement("tr");
+        emptyRow.innerHTML = `<td colspan="5" class="empty-row">No hay productos para mostrar.</td>`;
+        productsGrid.appendChild(emptyRow);
+    }
 
     statsEl.innerHTML = `<span>Total: ${summary.total}</span><span>Vigentes: ${summary.vigente}</span><span>Por vencer: ${summary.por_vencer}</span><span>Vencidos: ${summary.vencido}</span><span>Críticos: ${summary.critic}</span>`;
+
+    // Actualiza cards y gráfico
+    document.getElementById('totalCount').textContent = summary.total;
+    document.getElementById('vigenteCount').textContent = summary.vigente;
+    document.getElementById('porVencerCount').textContent = summary.por_vencer;
+    document.getElementById('vencidoCount').textContent = summary.vencido;
+    document.getElementById('criticCount').textContent = summary.critic;
+
+    const max = Math.max(summary.total, 1);
+    document.getElementById('barVigente').style.width = `${(summary.vigente / max) * 100}%`;
+    document.getElementById('barPorVencer').style.width = `${(summary.por_vencer / max) * 100}%`;
+    document.getElementById('barVencido').style.width = `${(summary.vencido / max) * 100}%`;
 }
 
 loadProducts();

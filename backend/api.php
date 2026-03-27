@@ -26,10 +26,23 @@ try {
     exit;
 }
 
-$path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$base = dirname($_SERVER['SCRIPT_NAME']);
-$resource = trim(substr($path, strlen($base)), '/');
-$parts = array_values(array_filter(explode('/', $resource)));
+// Soporta /backend/api.php?resource=products y /backend/api.php/products
+$resource = $_GET['resource'] ?? null;
+$id = isset($_GET['id']) ? intval($_GET['id']) : null;
+
+if (!$resource) {
+    $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+    $base = dirname($_SERVER['SCRIPT_NAME']);
+    $raw = trim(substr($path, strlen($base)), '/');
+    $parts = array_values(array_filter(explode('/', $raw)));
+
+    if (count($parts) >= 1 && $parts[0] === 'products') {
+        $resource = 'products';
+        if (isset($parts[1])) {
+            $id = intval($parts[1]);
+        }
+    }
+}
 
 function response($data, $statusCode = 200) {
     http_response_code($statusCode);
@@ -37,11 +50,9 @@ function response($data, $statusCode = 200) {
     exit;
 }
 
-if (count($parts) < 1 || $parts[0] !== 'products') {
+if ($resource !== 'products') {
     response(['error' => 'Recurso no encontrado'], 404);
 }
-
-$id = $parts[1] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $query = $pdo->query('SELECT * FROM products ORDER BY vencimiento ASC, nombre ASC');

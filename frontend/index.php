@@ -12,8 +12,10 @@
 <body>
     <div class="app-shell">
         <header class="topbar">
-            <div class="brand">AniGuard Inventario</div>
-            <p>Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
+            <div class="brand">StockAlert</div>
+            <div class="topbar-right">
+                <p>Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
+            </div>
         </header>
 
         <main class="container">
@@ -44,21 +46,54 @@
             <section class="panel list-panel">
                 <div class="toolbar">
                     <h2>Inventario</h2>
-                    <div class="filters">
-                        <label>
-                            Ver:
-                            <select id="filterStatus">
-                                <option value="all">Todos</option>
-                                <option value="vigente">Vigentes</option>
-                                <option value="por_vencer">Por vencer</option>
-                                <option value="vencido">Vencidos</option>
-                            </select>
-                        </label>
+                </div>
+
+                <div class="tabs" id="statusTabs">
+                    <button class="status-tab active" data-status="all">[Todos]</button>
+                    <button class="status-tab" data-status="vigente">[Vigentes]</button>
+                    <button class="status-tab" data-status="por_vencer">[Por vencer]</button>
+                    <button class="status-tab" data-status="vencido">[Vencidos]</button>
+                </div>
+
+                <div class="dashboard-cards">
+                    <div class="card total-card"><strong>Total</strong> <span id="totalCount">0</span></div>
+                    <div class="card vigente-card"><strong>Vigentes</strong> <span id="vigenteCount">0</span></div>
+                    <div class="card por-vencer-card"><strong>Por vencer</strong> <span id="porVencerCount">0</span></div>
+                    <div class="card vencido-card"><strong>Vencidos</strong> <span id="vencidoCount">0</span></div>
+                    <div class="card critic-card"><strong>Críticos</strong> <span id="criticCount">0</span></div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="bar-group">
+                        <span>Vigente</span>
+                        <div class="bar-bg"><div class="bar-fill" id="barVigente"></div></div>
+                    </div>
+                    <div class="bar-group">
+                        <span>Por vencer</span>
+                        <div class="bar-bg"><div class="bar-fill warning" id="barPorVencer"></div></div>
+                    </div>
+                    <div class="bar-group">
+                        <span>Vencido</span>
+                        <div class="bar-bg"><div class="bar-fill danger" id="barVencido"></div></div>
                     </div>
                 </div>
 
+                <div class="table-wrap">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsGrid"></tbody>
+                    </table>
+                </div>
+
                 <div class="stats" id="stats"></div>
-                <div id="productsGrid" class="products-grid"></div>
             </section>
         </main>
 
