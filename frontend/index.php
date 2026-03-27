@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="AniGuard Inventario: gestión con alertas de vencimiento para negocios pequeños." />
-    <title>AniGuard Inventario | Control y Alertas</title>
+    <meta name="description" content="StockAlert: gestión con alertas de vencimiento para negocios pequeños." />
+    <title>StockAlert</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 
