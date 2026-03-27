@@ -1,10 +1,10 @@
 <?php
 // Protocolo del proyecto: Sistema Web de Gestión de Inventario con Alertas de Vencimiento
-// Nombre de la página: AniGuard Inventario
+// Nombre de la página: StockAlert
 // Descripción: Producto para pequeños comercios y tiendas de mascotas que gestiona productos perecibles, clasifica estados y lanza alertas visuales.
 
 $proyecto = [
-    'nombre' => 'AniGuard Inventario',
+    'nombre' => 'StockAlert',
     'descripcion' => 'Aplicación web para controlar inventarios con fecha de vencimiento y alertas de stock crítico.',
     'objetivo' => 'Registrar, visualizar y controlar productos con fecha de vencimiento, alertando oportunamente sobre su estado.',
     'publico' => ['Dueños de almacenes', 'Tiendas de mascotas', 'Pequeños comercios'],
@@ -20,7 +20,7 @@ header('Content-Type: text/html; charset=utf-8');
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Protocolo AniGuard Inventario</title>
+    <title>Protocolo StockAlert</title>
 </head>
 <body>
     <h1>Protocolo del proyecto: <?= htmlspecialchars($proyecto['nombre']) ?></h1>
