@@ -46,6 +46,9 @@
             <section class="panel list-panel">
                 <div class="toolbar">
                     <h2>Inventario</h2>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Buscar por nombre..." class="search-input" />
+                    </div>
                 </div>
 
                 <div class="tabs" id="statusTabs">

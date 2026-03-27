@@ -1,5 +1,5 @@
 // API PHP para prototipo desarrollado con XAMPP
-const API = "../backend/api.php?resource=products";
+const API = "../backend/api.php?resource=productos";
 
 const form = document.getElementById("productForm");
 const mensajeEl = document.getElementById("mensaje");
@@ -9,6 +9,7 @@ const statusTabs = document.querySelectorAll(".status-tab");
 
 let products = [];
 let currentStatus = "all";
+let searchQuery = "";
 
 statusTabs.forEach(tab => {
     tab.addEventListener("click", () => {
@@ -17,6 +18,11 @@ statusTabs.forEach(tab => {
         currentStatus = tab.getAttribute("data-status");
         loadProducts();
     });
+});
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+    searchQuery = e.target.value.toLowerCase();
+    renderProducts();
 });
 
 form.addEventListener("submit", async (e) => {
@@ -82,7 +88,7 @@ async function deleteProduct(id) {
     const clave = confirm("¿Eliminar este producto del inventario?");
     if (!clave) return;
 
-    const res = await fetch(`../backend/api.php?resource=products&id=${id}`, { method: "DELETE" });
+    const res = await fetch(`../backend/api.php?resource=productos&id=${id}`, { method: "DELETE" });
     if (res.ok) {
         showMessage("Producto eliminado", "success");
         await loadProducts();
@@ -95,7 +101,10 @@ async function deleteProduct(id) {
 async function loadProducts() {
     const res = await fetch(API);
     products = await res.json();
+    renderProducts();
+}
 
+function renderProducts() {
     const stockCritico = Number(document.getElementById("stockCritico").value) || 5;
     productsGrid.innerHTML = "";
 
@@ -103,7 +112,11 @@ async function loadProducts() {
 
     const filtered = products
         .map((p) => ({ ...p, status: getStatus(p), diasRestantes: Math.ceil((new Date(p.vencimiento + "T23:59:59") - new Date()) / (1000 * 60 * 60 * 24)) }))
-        .filter((p) => currentStatus === "all" || p.status === currentStatus);
+        .filter((p) => {
+            const matchStatus = currentStatus === "all" || p.status === currentStatus;
+            const matchSearch = searchQuery === "" || p.nombre.toLowerCase().includes(searchQuery);
+            return matchStatus && matchSearch;
+        });
 
     filtered.forEach((product) => {
         summary.total += 1;
