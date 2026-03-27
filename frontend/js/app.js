@@ -1,4 +1,5 @@
-const API = "http://localhost:3000/products";
+// API PHP para prototipo desarrollado con XAMPP
+const API = "../backend/api.php/products";
 
 const form = document.getElementById("productForm");
 const mensajeEl = document.getElementById("mensaje");
