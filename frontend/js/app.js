@@ -1,5 +1,5 @@
 // API PHP para prototipo desarrollado con XAMPP
-const API = "../backend/api.php?resource=products";
+const API = "../backend/api.php?resource=productos";
 
 const form = document.getElementById("productForm");
 const mensajeEl = document.getElementById("mensaje");
@@ -82,7 +82,7 @@ async function deleteProduct(id) {
     const clave = confirm("¿Eliminar este producto del inventario?");
     if (!clave) return;
 
-    const res = await fetch(`../backend/api.php?resource=products&id=${id}`, { method: "DELETE" });
+    const res = await fetch(`../backend/api.php?resource=productos&id=${id}`, { method: "DELETE" });
     if (res.ok) {
         showMessage("Producto eliminado", "success");
         await loadProducts();
