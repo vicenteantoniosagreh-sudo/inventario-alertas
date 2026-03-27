@@ -17,7 +17,10 @@
                 <p>Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
             </div>
         </header>
-
+        <div id="pageAlert" class="page-alert hidden">
+            <button id="pageAlertClose" class="page-alert-close" aria-label="Cerrar alerta">×</button>
+            <p id="pageAlertText" class="page-alert-text"></p>
+        </div>
         <main class="container">
             <section class="panel form-panel">
                 <h2>Registrar Producto</h2>

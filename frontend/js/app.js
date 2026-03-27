@@ -57,7 +57,7 @@ form.addEventListener("submit", async (e) => {
     }
 });
 
-filterStatus.addEventListener("change", () => loadProducts());
+// filterStatus not used, mantenemos filtrado con tabs
 
 function showMessage(text, type = "success") {
     mensajeEl.textContent = text;
@@ -66,7 +66,36 @@ function showMessage(text, type = "success") {
     setTimeout(() => {
         mensajeEl.textContent = "";
         mensajeEl.className = "alert";
-    }, 2500);
+    }, 3500);
+}
+
+function showPageAlert(text, type = "warning") {
+    const pageAlert = document.getElementById('pageAlert');
+    const pageAlertText = document.getElementById('pageAlertText');
+    pageAlertText.textContent = text;
+    pageAlert.className = `page-alert ${type} visible`;
+
+    clearTimeout(window.pageAlertTimeout);
+    window.pageAlertTimeout = setTimeout(() => {
+        pageAlert.className = 'page-alert hidden';
+    }, 4200);
+}
+
+document.getElementById('pageAlertClose').addEventListener('click', () => {
+    const pageAlert = document.getElementById('pageAlert');
+    pageAlert.className = 'page-alert hidden';
+    clearTimeout(window.pageAlertTimeout);
+});
+
+function checkExpiryAlerts(products) {
+    const exp = products.filter(p => p.status === 'vencido');
+    const soon = products.filter(p => p.status === 'por_vencer');
+
+    if (exp.length > 0) {
+        showPageAlert(`¡Atención! ${exp.length} producto(s) vencido(s) detectado(s).`, 'error');
+    } else if (soon.length > 0) {
+        showPageAlert(`Aviso: ${soon.length} producto(s) por vencer en los próximos 7 días.`, 'warning');
+    }
 }
 
 function getStatus(product) {
@@ -157,6 +186,8 @@ function renderProducts() {
     document.getElementById('porVencerCount').textContent = summary.por_vencer;
     document.getElementById('vencidoCount').textContent = summary.vencido;
     document.getElementById('criticCount').textContent = summary.critic;
+
+    checkExpiryAlerts(filtered);
 
     const max = Math.max(summary.total, 1);
     document.getElementById('barVigente').style.width = `${(summary.vigente / max) * 100}%`;
