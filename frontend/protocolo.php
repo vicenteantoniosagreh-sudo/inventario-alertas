@@ -9,7 +9,7 @@ $proyecto = [
     'objetivo' => 'Registrar, visualizar y controlar productos con fecha de vencimiento, alertando oportunamente sobre su estado.',
     'publico' => ['Dueños de almacenes', 'Tiendas de mascotas', 'Pequeños comercios'],
     'funcionalidades' => ['Registro de productos', 'Visualización de inventario', 'Identificación de productos críticos', 'Filtros por estado', 'Eliminación de productos'],
-    'tecnologia' => 'PHP + SQLite para backend, HTML/CSS/JS para frontend',
+    'tecnologia' => 'PHP + MySQL para backend, HTML/CSS/JS para frontend',
     'alcance' => 'MVP funcional en 1 día',
 ];
 
