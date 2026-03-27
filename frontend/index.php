@@ -49,10 +49,10 @@
                 </div>
 
                 <div class="tabs" id="statusTabs">
-                    <button class="status-tab active" data-status="all">[Todos]</button>
-                    <button class="status-tab" data-status="vigente">[Vigentes]</button>
-                    <button class="status-tab" data-status="por_vencer">[Por vencer]</button>
-                    <button class="status-tab" data-status="vencido">[Vencidos]</button>
+                    <button class="status-tab active" data-status="all">Todos</button>
+                    <button class="status-tab" data-status="vigente">Vigentes</button>
+                    <button class="status-tab" data-status="por_vencer">Por vencer</button>
+                    <button class="status-tab" data-status="vencido">Vencidos</button>
                 </div>
 
                 <div class="dashboard-cards">
