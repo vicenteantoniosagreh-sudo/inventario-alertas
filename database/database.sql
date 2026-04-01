@@ -1,7 +1,0 @@
--- Schema para inventario en PHP/MySQL
-CREATE TABLE IF NOT EXISTS products (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
-    cantidad INTEGER NOT NULL,
-    vencimiento TEXT NOT NULL
-);

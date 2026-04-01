@@ -25,22 +25,41 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
     renderProducts();
 });
 
+const valorNetoInput = document.getElementById("valorNeto");
+const impuestoInput = document.getElementById("impuesto");
+const valorFinalInput = document.getElementById("valorFinal");
+
+function calculateFinalValue() {
+    const neto = Number(valorNetoInput.value) || 0;
+    const imp = Number(impuestoInput.value) || 0;
+    const final = neto + (neto * imp / 100);
+    valorFinalInput.value = final > 0 ? Math.round(final) : "";
+}
+
+if (valorNetoInput && impuestoInput) {
+    valorNetoInput.addEventListener("input", calculateFinalValue);
+    impuestoInput.addEventListener("input", calculateFinalValue);
+}
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const nombre = document.getElementById("nombre").value.trim();
     const cantidad = Number(document.getElementById("cantidad").value);
     const vencimiento = document.getElementById("vencimiento").value;
+    const fecha_elaboracion = document.getElementById("fechaElaboracion") ? document.getElementById("fechaElaboracion").value : null;
+    const valor_neto = valorNetoInput ? Number(valorNetoInput.value) : 0;
+    const impuesto = impuestoInput ? Number(impuestoInput.value) : 0;
 
     try {
-        if (!nombre || !cantidad || !vencimiento) throw new Error("Completa todos los campos");
+        if (!nombre || !cantidad || !vencimiento) throw new Error("Completa todos los campos obligatorios");
 
         const res = await fetch(API, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ nombre, cantidad, vencimiento })
+            body: JSON.stringify({ nombre, cantidad, vencimiento, fecha_elaboracion, valor_neto, impuesto })
         });
 
         if (!res.ok) {
@@ -157,10 +176,17 @@ function renderProducts() {
         const dias = product.diasRestantes;
         const dayText = dias < 0 ? `${Math.abs(dias)} días atrás` : `${dias} días`;
 
+        const neto = Number(product.valor_neto) || 0;
+        const imp = Number(product.impuesto) || 0;
+        const finalPrice = neto > 0 ? "$" + Math.round(neto + (neto * imp / 100)) : "-";
+        const elaboracionDate = product.fecha_elaboracion || '-';
+
         tr.innerHTML = `
             <td>${product.nombre}</td>
             <td>${product.cantidad}</td>
             <td>${product.vencimiento} <span class="small-text">(${dayText})</span></td>
+            <td>${elaboracionDate}</td>
+            <td>${finalPrice}</td>
             <td><span class="status-pill status-${product.status}">${badge}</span></td>
             <td><button class="btn-danger small" onclick="deleteProduct(${product.id})">Eliminar</button></td>
         `;

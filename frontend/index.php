@@ -10,17 +10,21 @@
 </head>
 
 <body>
+
     <div class="app-shell">
+
         <header class="topbar">
             <div class="brand">StockAlert</div>
             <div class="topbar-right">
                 <p>Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
             </div>
         </header>
+
         <div id="pageAlert" class="page-alert hidden">
             <button id="pageAlertClose" class="page-alert-close" aria-label="Cerrar alerta">×</button>
             <p id="pageAlertText" class="page-alert-text"></p>
         </div>
+
         <main class="container">
             <section class="panel form-panel">
                 <h2>Registrar Producto</h2>
@@ -33,9 +37,25 @@
                         Cantidad
                         <input type="number" min="1" id="cantidad" placeholder="Ej. 10" required />
                     </label>
+                    <Label>
+                        Fecha de Elaboración
+                        <input type="date" id="fechaElaboracion" />
+                    </Label>
                     <label>
                         Vencimiento
                         <input type="date" id="vencimiento" required />
+                    </label>
+                    <label>
+                        Valor Neto
+                        <input type="number" min="1" id="valorNeto" placeholder="Ej. 10000" required />
+                    </label>
+                    <label>
+                        IVA/Impuestos(%)
+                        <input type="number" min="0" id="impuesto" placeholder="Ej. 19" value="19" required />
+                    </label>
+                    <label>
+                        Valor Final
+                        <input type="text" id="valorFinal" readonly placeholder="Se calcula solo">
                     </label>
                     <label>
                         Stock mínimo crítico
@@ -72,15 +92,21 @@
                 <div class="chart-wrapper">
                     <div class="bar-group">
                         <span>Vigente</span>
-                        <div class="bar-bg"><div class="bar-fill" id="barVigente"></div></div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" id="barVigente"></div>
+                        </div>
                     </div>
                     <div class="bar-group">
                         <span>Por vencer</span>
-                        <div class="bar-bg"><div class="bar-fill warning" id="barPorVencer"></div></div>
+                        <div class="bar-bg">
+                            <div class="bar-fill warning" id="barPorVencer"></div>
+                        </div>
                     </div>
                     <div class="bar-group">
                         <span>Vencido</span>
-                        <div class="bar-bg"><div class="bar-fill danger" id="barVencido"></div></div>
+                        <div class="bar-bg">
+                            <div class="bar-fill danger" id="barVencido"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -90,7 +116,9 @@
                             <tr>
                                 <th>Nombre</th>
                                 <th>Cantidad</th>
-                                <th>Fecha</th>
+                                <th>Vencimiento</th>
+                                <th>Elaboración</th>
+                                <th>Valor Final</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -107,6 +135,7 @@
             <span>Prototipo de gestión de inventario - 2026</span>
             <span>Alertas por vencimiento/autoclasificación y control de stock.</span>
         </footer>
+
     </div>
     <script src="js/app.js"></script>
 </body>
