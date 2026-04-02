@@ -59,7 +59,7 @@
                     </label>
                     <label>
                         Stock mínimo crítico
-                        <input type="number" min="1" id="stockCritico" value="5" />
+                        <input type="number" min="1" id="stockCritico" placeholder="5" />
                     </label>
                     <button type="submit" class="btn-primary">Agregar producto</button>
                 </form>
