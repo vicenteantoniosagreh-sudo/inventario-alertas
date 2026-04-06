@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 
 <head>
     <meta charset="UTF-8" />
@@ -17,6 +17,7 @@
             <div class="brand">StockAlert</div>
             <div class="topbar-right">
                 <p>Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
+                <button id="themeToggle" class="btn-toggle">🌙</button>
             </div>
         </header>
 

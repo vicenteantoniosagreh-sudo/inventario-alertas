@@ -222,3 +222,18 @@ function renderProducts() {
 }
 
 loadProducts();
+
+const toggle = document.getElementById("themeToggle");
+
+toggle.addEventListener("click", () => {
+    let currentTheme = document.documentElement.getAttribute("data-theme");
+
+    if (currentTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "light");
+    } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
+
+    currentTheme = document.documentElement.getAttribute("data-theme");
+    toggle.textContent = currentTheme === "dark" ? "🌙" : "☀️";
+});

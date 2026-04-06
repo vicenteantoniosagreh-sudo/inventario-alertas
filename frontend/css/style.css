@@ -11,6 +11,10 @@
     --text: #0f172a;
     --muted: #475569;
     --border: #e2e8f0;
+    --topbar-bg: linear-gradient(90deg, #e0ecff, #c7dbff);
+    --topbar-text: #0f172a;
+    --topbar-text-secondary: #334155;
+    --button-text: #0f172a;
 }
 
 [data-theme="dark"] {
@@ -25,14 +29,18 @@
     --text: #e2e8f0;
     --muted: #94a3b8;
     --border: #243244;
+    --topbar-bg: linear-gradient(90deg, #101c36, #0d1331);
+    --topbar-text: #ffffff;
+    --topbar-text-secondary: rgba(255,255,255,.85);
+    --button-text: #ffffff;
 }
 
 body {
     margin: 0;
     padding: 0;
     font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #10172b 0%, #0a1221 100%);
-    color: #e6edf8;
+    background: var(--bg);
+    color: var(--text);
     transition: all .25s ease;
 }
 
@@ -43,8 +51,8 @@ body {
 }
 
 .topbar {
-    background: linear-gradient(90deg, #101c36, #0d1331);
-    color: #ffffff;
+    background: var(--topbar-bg);
+    color: var(--topbar-text);
     padding: 1rem 1.25rem;
     display: flex;
     align-items: center;
@@ -70,40 +78,27 @@ body {
 .topbar-right p {
     margin: 0;
     font-size: .9rem;
-    color: rgba(255,255,255,.88);
+    color: var(--topbar-text-secondary);
 }
 
 .btn-toggle {
-    border: 1px solid rgba(255,255,255,0.85);
-    background: rgba(255,255,255,0.18);
-    color: white;
+    border: 1px solid rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.15);
+    color: var(--button-text);
     cursor: pointer;
     border-radius: 999px;
     padding: 0.4rem 0.8rem;
-    font-size: .8rem;
+    font-size: .9rem;
     font-weight: 700;
-    transition: background .2s ease;
+    transition: all .25s ease;
 }
 
 .btn-toggle:hover {
     background: rgba(255,255,255,0.35);
+    transform: scale(1.05);
 }
 
-.topbar p {
-    margin: 0.4rem 0 0;
-    color: rgba(255,255,255,.85);
-    font-size: .95rem;
-}
 
-    font-size: 1.75rem;
-    font-weight: 800;
-}
-
-.topbar p {
-    margin: 0.4rem 0 0;
-    color: rgba(255,255,255,.85);
-    font-size: .95rem;
-}
 
 .container {
     max-width: 1200px;
@@ -115,7 +110,8 @@ body {
 }
 
 .panel {
-    background: rgba(15, 23, 42, 0.78);
+    background: var(--card-bg);
+    color: var(--text);
     border: 1px solid rgba(116, 129, 176, 0.3);
     border-radius: 14px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.35);
@@ -277,21 +273,21 @@ body {
     width: 100%;
     padding: 0.6rem 0.85rem;
     border: 1px solid rgba(144, 163, 195, 0.35);
-    background: rgba(20, 30, 59, 0.8);
+    background: var(--card-bg);
     border-radius: 10px;
-    color: #e3f0ff;
+    color: var(--text);
     font-size: 0.9rem;
     transition: border-color .2s ease, background .2s ease;
 }
 
 .search-input::placeholder {
-    color: rgba(227, 240, 255, 0.6);
+    color: var(--text);
 }
 
 .search-input:focus {
     outline: none;
     border-color: #60a5fa;
-    background: rgba(25, 35, 69, 0.9);
+    background: var(--card-bg);
 }
 
 .tabs {
@@ -302,8 +298,8 @@ body {
 
 .status-tab {
     border: 1px solid rgba(144, 163, 195, 0.4);
-    background: rgba(20, 30, 59, 0.8);
-    color: #e3f0ff;
+    background: var(--card-bg);
+    color: var(--text);
     padding: 0.5rem 0.8rem;
     border-radius: 8px;
     cursor: pointer;
@@ -322,7 +318,7 @@ body {
     overflow-x: auto;
     border: 1px solid rgba(144, 163, 195, 0.25);
     border-radius: 12px;
-    background: rgba(15, 23, 42, 0.65);
+    background: var(--card-bg);
 }
 
 .products-table {
@@ -343,8 +339,8 @@ body {
     font-size: 0.88rem;
     text-transform: uppercase;
     letter-spacing: .02em;
-    color: #b8c6e2;
-    border-bottom: 1px solid rgba(96, 123, 167, 0.5);
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
 }
 
 .products-table tbody tr:hover {
@@ -358,7 +354,7 @@ body {
 }
 
 .small-text {
-    color: #9eb0d4;
+    color: var(--muted);
     font-size: .78rem;
 }
 
@@ -375,7 +371,7 @@ body {
     display: flex;
     gap: 0.75rem;
     font-size: .9rem;
-    color: #c7d4e9;
+    color: var(--muted);
     flex-wrap: wrap;
 }
 
@@ -387,11 +383,11 @@ body {
 }
 
 .dashboard-cards .card {
-    background: rgba(28, 39, 68, 0.8);
+    background: var(--card-bg);
     border: 1px solid rgba(144, 163, 195, 0.28);
     border-radius: 11px;
     padding: 0.6rem 0.75rem;
-    color: #eaf0ff;
+    color: var(--text);
     font-weight: 700;
     text-align: center;
     font-size: .8rem;
@@ -409,7 +405,7 @@ body {
 .critic-card { background: rgba(232, 120, 42, 0.24); }
 
 .chart-wrapper {
-    background: rgba(18, 27, 52, 0.82);
+    background: var(--card-bg);
     border: 1px solid rgba(144, 163, 195, 0.25);
     padding: 0.7rem;
     border-radius: 12px;
@@ -425,7 +421,7 @@ body {
 
 .bar-group span {
     width: 78px;
-    color: #c5d7f4;
+    color: var(--muted);
     font-size: .78rem;
 }
 
