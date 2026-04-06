@@ -25,6 +25,28 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
     renderProducts();
 });
 
+document.getElementById("exportBtn").addEventListener("click", async () => {
+    try {
+        const res = await fetch("../backend/api.php?resource=productos&export=csv");
+        if (!res.ok) {
+            const body = await res.text();
+            throw new Error(body || "Error al generar el archivo");
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "inventario_completo.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showMessage("Archivo descargado con éxito", "success");
+    } catch (error) {
+        showMessage(error.message, "error");
+    }
+});
+
 const valorNetoInput = document.getElementById("valorNeto");
 const impuestoInput = document.getElementById("impuesto");
 const valorFinalInput = document.getElementById("valorFinal");

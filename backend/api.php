@@ -76,6 +76,129 @@ if ($resource !== 'productos' && $resource !== 'products') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET['export']) && in_array($_GET['export'], ['csv', 'excel', 'xlsx'], true)) {
+        $query = $pdo->query('SELECT id, nombre, sku, cantidad, fecha_vencimiento AS vencimiento, fecha_elaboracion, valor_neto, impuesto, categoria FROM productos ORDER BY nombre ASC');
+        $productos = $query->fetchAll();
+
+        if ($_GET['export'] === 'csv') {
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=inventario_completo.csv');
+
+            $output = fopen('php://output', 'w');
+            fputs($output, "\xEF\xBB\xBF");
+            fputcsv($output, ['ID', 'Nombre', 'SKU', 'Cantidad', 'Vencimiento', 'Elaboración', 'Valor Neto', 'Impuesto', 'Categoría'], ';');
+
+            foreach ($productos as $producto) {
+                fputcsv($output, [
+                    $producto['id'],
+                    $producto['nombre'],
+                    $producto['sku'],
+                    $producto['cantidad'],
+                    $producto['vencimiento'],
+                    $producto['fecha_elaboracion'] ?: '',
+                    $producto['valor_neto'],
+                    $producto['impuesto'],
+                    $producto['categoria']
+                ], ';');
+            }
+
+            fclose($output);
+            exit;
+        }
+
+        if ($_GET['export'] === 'excel' && !class_exists('ZipArchive')) {
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=inventario_completo.csv');
+
+            $output = fopen('php://output', 'w');
+            fputcsv($output, ['ID', 'Nombre', 'SKU', 'Cantidad', 'Vencimiento', 'Elaboración', 'Valor Neto', 'Impuesto', 'Categoría']);
+
+            foreach ($productos as $producto) {
+                fputcsv($output, [
+                    $producto['id'],
+                    $producto['nombre'],
+                    $producto['sku'],
+                    $producto['cantidad'],
+                    $producto['vencimiento'],
+                    $producto['fecha_elaboracion'] ?: '',
+                    $producto['valor_neto'],
+                    $producto['impuesto'],
+                    $producto['categoria']
+                ]);
+            }
+
+            fclose($output);
+            exit;
+        }
+
+        // Exportar a XLSX simple sin librerías externas
+        $filename = 'inventario_completo.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        function escapeXml($value) {
+            return str_replace(['&', '<', '>', '"', "'"], ['&amp;', '&lt;', '&gt;', '&quot;', '&apos;'], $value);
+        }
+
+        $rows = [];
+        $rows[] = ['ID', 'Nombre', 'SKU', 'Cantidad', 'Vencimiento', 'Elaboración', 'Valor Neto', 'Impuesto', 'Categoría'];
+
+        foreach ($productos as $producto) {
+            $rows[] = [
+                $producto['id'],
+                $producto['nombre'],
+                $producto['sku'],
+                $producto['cantidad'],
+                $producto['vencimiento'],
+                $producto['fecha_elaboracion'] ?: '',
+                $producto['valor_neto'],
+                $producto['impuesto'],
+                $producto['categoria']
+            ];
+        }
+
+        $sheetRows = '';
+        foreach ($rows as $rowIndex => $row) {
+            $rowNumber = $rowIndex + 1;
+            $sheetRows .= '<row r="' . $rowNumber . '">';
+            foreach ($row as $colIndex => $cellValue) {
+                $colLetter = chr(65 + $colIndex);
+                $cellRef = $colLetter . $rowNumber;
+                if ($rowIndex > 0 && is_numeric($cellValue)) {
+                    $sheetRows .= '<c r="' . $cellRef . '"><v>' . $cellValue . '</v></c>';
+                } else {
+                    $sheetRows .= '<c r="' . $cellRef . '" t="inlineStr"><is><t>' . escapeXml((string)$cellValue) . '</t></is></c>';
+                }
+            }
+            $sheetRows .= '</row>';
+        }
+
+        $contentTypes = '<?xml version="1.0" encoding="UTF-8"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n    <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n    <Default Extension="xml" ContentType="application/xml"/>\n    <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>\n    <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>\n    <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>\n</Types>';
+        $rels = '<?xml version="1.0" encoding="UTF-8"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="/xl/workbook.xml"/>\n</Relationships>';
+        $workbook = '<?xml version="1.0" encoding="UTF-8"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">\n    <sheets>\n        <sheet name="Inventario" sheetId="1" r:id="rId1"/>\n    </sheets>\n</workbook>';
+        $workbookRels = '<?xml version="1.0" encoding="UTF-8"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>\n    <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>\n</Relationships>';
+        $sheetXml = '<?xml version="1.0" encoding="UTF-8"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">\n    <sheetData>\n' . $sheetRows . '\n    </sheetData>\n</worksheet>';
+        $stylesXml = '<?xml version="1.0" encoding="UTF-8"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">\n    <fonts count="1">\n        <font>\n            <sz val="11"/>\n            <color theme="1"/>\n            <name val="Calibri"/>\n        </font>\n    </fonts>\n    <fills count="2">\n        <fill>\n            <patternFill patternType="none"/>\n        </fill>\n        <fill>\n            <patternFill patternType="gray125"/>\n        </fill>\n    </fills>\n    <borders count="1">\n        <border>\n            <left/>\n            <right/>\n            <top/>\n            <bottom/>\n            <diagonal/>\n        </border>\n    </borders>\n    <cellStyleXfs count="1">\n        <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>\n    </cellStyleXfs>\n    <cellXfs count="1">\n        <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>\n    </cellXfs>\n    <cellStyles count="1">\n        <cellStyle name="Normal" xfId="0" builtinId="0"/>\n    </cellStyles>\n</styleSheet>';
+
+        $tmpFile = tempnam(sys_get_temp_dir(), 'xlsx');
+        $zip = new ZipArchive();
+        if ($zip->open($tmpFile, ZipArchive::CREATE) !== true) {
+            response(['error' => 'No se pudo crear el archivo XLSX'], 500);
+        }
+
+        $zip->addFromString('[Content_Types].xml', $contentTypes);
+        $zip->addFromString('_rels/.rels', $rels);
+        $zip->addFromString('xl/workbook.xml', $workbook);
+        $zip->addFromString('xl/_rels/workbook.xml.rels', $workbookRels);
+        $zip->addFromString('xl/worksheets/sheet1.xml', $sheetXml);
+        $zip->addFromString('xl/styles.xml', $stylesXml);
+        $zip->close();
+
+        readfile($tmpFile);
+        unlink($tmpFile);
+        exit;
+    }
+
     $query = $pdo->query('SELECT id, nombre, sku, cantidad, fecha_vencimiento AS vencimiento, fecha_elaboracion, valor_neto, impuesto, categoria FROM productos ORDER BY fecha_vencimiento ASC');
     $all = $query->fetchAll();
     response($all);
