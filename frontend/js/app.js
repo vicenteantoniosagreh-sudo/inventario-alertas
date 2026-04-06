@@ -54,13 +54,20 @@ form.addEventListener("submit", async (e) => {
     try {
         if (!nombre || !cantidad || !vencimiento) throw new Error("Completa todos los campos obligatorios");
 
+        const token = localStorage.getItem('token');
         const res = await fetch(API, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({ nombre, cantidad, vencimiento, fecha_elaboracion, valor_neto, impuesto })
         });
+
+        if (res.status === 401) {
+            logout();
+            return;
+        }
 
         if (!res.ok) {
             const data = await res.json();
@@ -136,7 +143,14 @@ async function deleteProduct(id) {
     const clave = confirm("¿Eliminar este producto del inventario?");
     if (!clave) return;
 
-    const res = await fetch(`../backend/api.php?resource=productos&id=${id}`, { method: "DELETE" });
+    const token = localStorage.getItem('token');
+    const res = await fetch(`../backend/api.php?resource=productos&id=${id}`, { 
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (res.status === 401) { logout(); return; }
+
     if (res.ok) {
         showMessage("Producto eliminado", "success");
         await loadProducts();
@@ -147,7 +161,13 @@ async function deleteProduct(id) {
 }
 
 async function loadProducts() {
-    const res = await fetch(API);
+    const token = localStorage.getItem('token');
+    const res = await fetch(API, {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (res.status === 401) { logout(); return; }
+
     products = await res.json();
     renderProducts();
 }
@@ -221,4 +241,22 @@ function renderProducts() {
     document.getElementById('barVencido').style.width = `${(summary.vencido / max) * 100}%`;
 }
 
-loadProducts();
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = 'login.php';
+}
+
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.php';
+    } else {
+        loadProducts();
+    }
+}
+
+// Se ejecuta al cargar la página Y si el navegador restaura la página del bfcache (botón ←)
+window.addEventListener('pageshow', () => {
+    checkAuth();
+});
