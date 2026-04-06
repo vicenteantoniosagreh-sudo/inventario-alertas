@@ -150,6 +150,7 @@ async function loadProducts() {
     const res = await fetch(API);
     products = await res.json();
     renderProducts();
+    loadTopExpiredChart();
 }
 
 function renderProducts() {
@@ -221,4 +222,107 @@ function renderProducts() {
     document.getElementById('barVencido').style.width = `${(summary.vencido / max) * 100}%`;
 }
 
+async function loadTopExpiredChart() {
+    try {
+        console.log("Iniciando carga del gráfico...");
+        
+        const canvasElement = document.getElementById('topExpiredChart');
+        if (!canvasElement) {
+            console.error("❌ Canvas no encontrado en el DOM");
+            return;
+        }
+        console.log("✓ Canvas encontrado");
+        
+        if (typeof Chart === 'undefined') {
+            console.error("❌ Chart.js no está cargado");
+            return;
+        }
+        console.log("✓ Chart.js está disponible");
+        
+        const res = await fetch("../backend/api.php?resource=top-expired");
+        console.log("Respuesta del servidor:", res.status);
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error("Error del servidor:", errorText);
+            throw new Error("Error al cargar datos del gráfico: " + res.status);
+        }
+        
+        const topExpired = await res.json();
+        console.log("Datos recibidos:", topExpired);
+        
+        if (!topExpired || topExpired.length === 0) {
+            console.warn("⚠️ No hay datos para el gráfico");
+            return;
+        }
+
+        const nombres = topExpired.map(p => p.nombre.substring(0, 20));
+        const cantidades = topExpired.map(p => p.cantidad);
+        
+        console.log("Nombres:", nombres);
+        console.log("Cantidades:", cantidades);
+        
+        const colors = [
+            'rgba(220, 53, 69, 0.7)',
+            'rgba(230, 70, 80, 0.7)',
+            'rgba(255, 100, 100, 0.7)',
+            'rgba(255, 140, 100, 0.7)',
+            'rgba(255, 165, 100, 0.7)'
+        ];
+        
+        const borderColors = [
+            'rgb(220, 53, 69)',
+            'rgb(230, 70, 80)',
+            'rgb(255, 100, 100)',
+            'rgb(255, 140, 100)',
+            'rgb(255, 165, 100)'
+        ];
+
+        const ctx = canvasElement.getContext('2d');
+        
+        if (window.topExpiredChartInstance) {
+            window.topExpiredChartInstance.destroy();
+        }
+        
+        console.log("Creando gráfico...");
+        window.topExpiredChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    data: cantidades,
+                    backgroundColor: colors,
+                    borderColor: borderColors,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + ' unidades';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        console.log("✓ Gráfico creado exitosamente");
+    } catch (error) {
+        console.error("❌ Error al cargar el gráfico:", error);
+    }
+}
+
 loadProducts();
+loadTopExpiredChart();
