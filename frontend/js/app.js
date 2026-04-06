@@ -156,7 +156,7 @@ function renderProducts() {
     const stockCritico = Number(document.getElementById("stockCritico").value) || 5;
     productsGrid.innerHTML = "";
 
-    const summary = { total: 0, vigente: 0, por_vencer: 0, vencido: 0, critic: 0 };
+    const summary = { total: 0, vigente: 0, por_vencer: 0, vencido: 0, critic: 0, loss: 0 };
 
     const filtered = products
         .map((p) => ({ ...p, status: getStatus(p), diasRestantes: Math.ceil((new Date(p.vencimiento + "T23:59:59") - new Date()) / (1000 * 60 * 60 * 24)) }))
@@ -171,14 +171,19 @@ function renderProducts() {
         summary[product.status] += 1;
         if (isCritical(product, stockCritico)) summary.critic += 1;
 
+        const neto = Number(product.valor_neto) || 0;
+        const imp = Number(product.impuesto) || 0;
+        const productFinal = neto + (neto * imp / 100);
+        if (product.status === 'vencido') {
+            summary.loss += productFinal * Number(product.cantidad);
+        }
+
         const tr = document.createElement("tr");
         const badge = product.status === "vigente" ? "Vigente" : product.status === "por_vencer" ? "Por vencer" : "Vencido";
         const dias = product.diasRestantes;
         const dayText = dias < 0 ? `${Math.abs(dias)} días atrás` : `${dias} días`;
 
-        const neto = Number(product.valor_neto) || 0;
-        const imp = Number(product.impuesto) || 0;
-        const finalPrice = neto > 0 ? "$" + Math.round(neto + (neto * imp / 100)) : "-";
+        const finalPrice = neto > 0 ? "$" + Math.round(productFinal) : "-";
         const elaboracionDate = product.fecha_elaboracion || '-';
 
         tr.innerHTML = `
@@ -204,7 +209,7 @@ function renderProducts() {
         productsGrid.appendChild(emptyRow);
     }
 
-    statsEl.innerHTML = `<span>Total: ${summary.total}</span><span>Vigentes: ${summary.vigente}</span><span>Por vencer: ${summary.por_vencer}</span><span>Vencidos: ${summary.vencido}</span><span>Críticos: ${summary.critic}</span>`;
+    statsEl.innerHTML = `<span>Total: ${summary.total}</span><span>Vigentes: ${summary.vigente}</span><span>Por vencer: ${summary.por_vencer}</span><span>Vencidos: ${summary.vencido}</span><span>Críticos: ${summary.critic}</span><span>Pérdida total venc.: $${summary.loss.toLocaleString()}</span>`;
 
     // Actualiza cards y gráfico
     document.getElementById('totalCount').textContent = summary.total;
@@ -212,6 +217,7 @@ function renderProducts() {
     document.getElementById('porVencerCount').textContent = summary.por_vencer;
     document.getElementById('vencidoCount').textContent = summary.vencido;
     document.getElementById('criticCount').textContent = summary.critic;
+    document.getElementById('lossCount').textContent = `$${summary.loss.toLocaleString()}`;
 
     checkExpiryAlerts(filtered);
 
