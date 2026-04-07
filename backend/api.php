@@ -48,6 +48,14 @@ if (!$resource) {
     }
 }
 
+// Endpoint para obtener los 5 productos más vencidos
+if ($resource === 'top-expired' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $query = $pdo->prepare('SELECT nombre, cantidad, fecha_vencimiento FROM productos WHERE usuario_id = :uid ORDER BY fecha_vencimiento ASC LIMIT 5');
+    $query->execute([':uid' => $uid]);
+    $topExpired = $query->fetchAll();
+    response($topExpired);
+}
+
 if ($resource !== 'productos' && $resource !== 'products') {
     response(['error' => 'Recurso no encontrado'], 404);
 }

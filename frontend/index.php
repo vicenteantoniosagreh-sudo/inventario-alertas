@@ -12,6 +12,7 @@ header('Expires: 0');
     <meta name="description" content="StockAlert: gestión con alertas de vencimiento para negocios pequeños." />
     <title>StockAlert</title>
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -116,6 +117,11 @@ header('Expires: 0');
                             <div class="bar-fill danger" id="barVencido"></div>
                         </div>
                     </div>
+                </div>
+
+                <div class="chart-container" style="max-width: 400px; margin: 20px auto; height: 350px;">
+                    <h3 style="text-align: center; margin-bottom: 15px;">Top 5 Productos Más Vencidos</h3>
+                    <canvas id="topExpiredChart" style="max-height: 300px;"></canvas>
                 </div>
 
                 <div class="table-wrap">

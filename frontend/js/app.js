@@ -206,6 +206,7 @@ async function loadProducts() {
 
     products = await res.json();
     renderProducts();
+    loadTopExpiredChart();
 }
 
 // ── Render principal ──────────────────────────────────────
@@ -393,4 +394,79 @@ if (themeToggle) {
         currentTheme = document.documentElement.getAttribute("data-theme");
         themeToggle.textContent = currentTheme === "dark" ? "🌙" : "☀️";
     });
+}
+
+// ── Gráfico Top Vencidos ───────────────────────────────────
+async function loadTopExpiredChart() {
+    try {
+        const canvasElement = document.getElementById('topExpiredChart');
+        if (!canvasElement) return;
+        
+        if (typeof Chart === 'undefined') return;
+        
+        const token = localStorage.getItem('token');
+        const res = await fetch("../backend/api.php?resource=top-expired", {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (res.status === 401) { logout(); return; }
+        if (!res.ok) return;
+        
+        const topExpired = await res.json();
+        if (!topExpired || topExpired.length === 0) return;
+
+        const nombres = topExpired.map(p => p.nombre.substring(0, 20));
+        const cantidades = topExpired.map(p => p.cantidad);
+        
+        const colors = [
+            'rgba(220, 53, 69, 0.7)',
+            'rgba(230, 70, 80, 0.7)',
+            'rgba(255, 100, 100, 0.7)',
+            'rgba(255, 140, 100, 0.7)',
+            'rgba(255, 165, 100, 0.7)'
+        ];
+        
+        const borderColors = [
+            'rgb(220, 53, 69)',
+            'rgb(230, 70, 80)',
+            'rgb(255, 100, 100)',
+            'rgb(255, 140, 100)',
+            'rgb(255, 165, 100)'
+        ];
+
+        const ctx = canvasElement.getContext('2d');
+        
+        if (window.topExpiredChartInstance) {
+            window.topExpiredChartInstance.destroy();
+        }
+        
+        window.topExpiredChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    data: cantidades,
+                    backgroundColor: colors,
+                    borderColor: borderColors,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 },
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--text').trim()
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Error al cargar el gráfico:", error);
+    }
 }
