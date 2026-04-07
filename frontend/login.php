@@ -30,14 +30,14 @@ header('Expires: 0');
             background: linear-gradient(120deg, #1d4ed8, #0f3a74);
             box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
         }
-        form label {
+        .form-grid label {
             display: block;
             margin-bottom: 5px;
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #ffffff;
+            color: #ffffff !important;
         }
     </style>
 </head>
