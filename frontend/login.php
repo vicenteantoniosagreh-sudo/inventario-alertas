@@ -18,12 +18,17 @@ header('Expires: 0');
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #0f172a;
+            background: linear-gradient(135deg, #10172b 0%, #0a1221 100%);
         }
         .form-panel {
-            background-color: #1e293b;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border: 1px solid #334155;
+            background-color: #111a2a; /* Unified with our new theme card-bg */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+        }
+        #authSubmit {
+            background: linear-gradient(120deg, #1d4ed8, #0f3a74);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
         }
     </style>
 </head>
