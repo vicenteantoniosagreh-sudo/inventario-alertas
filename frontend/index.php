@@ -1,3 +1,8 @@
+<?php
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -15,8 +20,9 @@
 
         <header class="topbar">
             <div class="brand">StockAlert</div>
-            <div class="topbar-right">
-                <p>Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
+            <div class="topbar-right" style="display: flex; gap: 15px; align-items: center;">
+                <p style="margin: 0;">Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
+                <button onclick="logout()" class="btn-danger small" style="margin: 0;">Cerrar Sesión</button>
             </div>
         </header>
 
