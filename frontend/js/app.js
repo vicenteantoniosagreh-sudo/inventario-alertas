@@ -259,12 +259,19 @@ function renderProducts() {
         return matchStatus && matchSearch;
     });
 
-    // Contadores
-    const summary = { total: 0, vigente: 0, por_vencer: 0, vencido: 0, critic: 0 };
+    // Contadores y Pérdidas
+    const summary = { total: 0, vigente: 0, por_vencer: 0, vencido: 0, critic: 0, loss: 0 };
     filtered.forEach(p => {
         summary.total++;
         summary[p.status]++;
         if (isCritical(p, stockCritico)) summary.critic++;
+        
+        if (p.status === 'vencido') {
+            const neto = Number(p.valor_neto) || 0;
+            const imp  = Number(p.impuesto)   || 0;
+            const finalVal = neto + (neto * imp / 100);
+            summary.loss += finalVal * Number(p.cantidad);
+        }
     });
 
     // ── Renderizar TABLA (PC / tablet) ───────────────────
@@ -274,11 +281,16 @@ function renderProducts() {
     renderCards(filtered, stockCritico);
 
     // ── Dashboard ─────────────────────────────────────────
-    document.getElementById("totalCount").textContent    = summary.total;
-    document.getElementById("vigenteCount").textContent  = summary.vigente;
-    document.getElementById("porVencerCount").textContent= summary.por_vencer;
-    document.getElementById("vencidoCount").textContent  = summary.vencido;
-    document.getElementById("criticCount").textContent   = summary.critic;
+    document.getElementById("totalCount").textContent     = summary.total;
+    document.getElementById("vigenteCount").textContent   = summary.vigente;
+    document.getElementById("porVencerCount").textContent = summary.por_vencer;
+    document.getElementById("vencidoCount").textContent   = summary.vencido;
+    document.getElementById("criticCount").textContent    = summary.critic;
+    
+    const lossEl = document.getElementById("lossCount");
+    if (lossEl) {
+        lossEl.textContent = "$" + Math.round(summary.loss).toLocaleString("es-CL");
+    }
 
     const max = Math.max(summary.total, 1);
     document.getElementById("barVigente").style.width   = `${(summary.vigente   / max) * 100}%`;
@@ -290,7 +302,8 @@ function renderProducts() {
         <span>Vigentes: ${summary.vigente}</span>
         <span>Por vencer: ${summary.por_vencer}</span>
         <span>Vencidos: ${summary.vencido}</span>
-        <span>Críticos: ${summary.critic}</span>`;
+        <span>Críticos: ${summary.critic}</span>
+        <span>Pérdida expira: $${Math.round(summary.loss).toLocaleString("es-CL")}</span>`;
 
     checkExpiryAlerts(filtered);
 }

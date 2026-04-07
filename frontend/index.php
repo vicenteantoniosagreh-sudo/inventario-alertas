@@ -99,6 +99,7 @@ header('Expires: 0');
                     <div class="card por-vencer-card"><strong>Por vencer</strong> <span id="porVencerCount">0</span></div>
                     <div class="card vencido-card"><strong>Vencidos</strong> <span id="vencidoCount">0</span></div>
                     <div class="card critic-card"><strong>Críticos</strong> <span id="criticCount">0</span></div>
+                    <div class="card loss-card"><strong>Pérdida total venc.</strong> <span id="lossCount">$0</span></div>
                 </div>
 
                 <div class="chart-wrapper">
