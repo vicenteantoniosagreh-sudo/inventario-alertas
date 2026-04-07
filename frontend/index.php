@@ -78,6 +78,9 @@ header('Expires: 0');
             <section class="panel list-panel">
                 <div class="toolbar">
                     <h2>Inventario</h2>
+                    <div class="toolbar-actions">
+                        <button id="exportBtn" type="button" class="btn-primary">Inventario Completo</button>
+                    </div>
                     <div class="search-box">
                         <input type="text" id="searchInput" placeholder="Buscar por nombre..." class="search-input" />
                     </div>

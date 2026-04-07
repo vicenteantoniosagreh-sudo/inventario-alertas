@@ -200,6 +200,39 @@ body {
 .btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(37,99,235,.38); }
 .btn-primary:active { transform: translateY(0); }
 
+.toolbar-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.toolbar-actions .btn-primary {
+    padding: 0.75rem 1rem;
+    min-width: 180px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.btn-secondary {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: var(--bg);
+    border-color: var(--primary);
+}
+
+.toolbar-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
 .alert {
     margin-top: 0.7rem;
     padding: 0.6rem 0.85rem;
