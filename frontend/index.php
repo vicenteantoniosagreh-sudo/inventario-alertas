@@ -133,6 +133,8 @@ header('Expires: 0');
                     </table>
                 </div>
 
+                <div id="inventoryCards" class="inventory-cards"></div>
+
                 <div class="stats" id="stats"></div>
             </section>
         </main>
