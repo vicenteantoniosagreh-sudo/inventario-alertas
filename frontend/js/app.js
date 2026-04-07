@@ -379,3 +379,18 @@ function renderCards(filtered, stockCritico) {
         requestAnimationFrame(() => card.classList.add("row-enter-active"));
     });
 }
+
+// ── Temas ──────────────────────────────────────────────────
+const themeToggle = document.getElementById("themeToggle");
+if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+        let currentTheme = document.documentElement.getAttribute("data-theme");
+        if (currentTheme === "dark") {
+            document.documentElement.setAttribute("data-theme", "light");
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+        }
+        currentTheme = document.documentElement.getAttribute("data-theme");
+        themeToggle.textContent = currentTheme === "dark" ? "🌙" : "☀️";
+    });
+}

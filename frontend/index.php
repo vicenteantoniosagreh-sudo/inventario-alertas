@@ -4,7 +4,7 @@ header('Pragma: no-cache');
 header('Expires: 0');
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 
 <head>
     <meta charset="UTF-8" />
@@ -22,7 +22,9 @@ header('Expires: 0');
             <div class="brand">StockAlert</div>
             <div class="topbar-right" style="display: flex; gap: 15px; align-items: center;">
                 <p style="margin: 0;">Sistema Web de Gestión de Inventario con Alertas de Vencimiento</p>
+                <button id="themeToggle" class="btn-toggle">🌙</button>
                 <button onclick="logout()" class="btn-danger small" style="margin: 0;">Cerrar Sesión</button>
+            </div>
             </div>
         </header>
 
