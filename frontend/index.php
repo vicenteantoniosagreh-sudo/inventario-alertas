@@ -26,7 +26,6 @@ header('Expires: 0');
                 <button id="themeToggle" class="btn-toggle">🌙</button>
                 <button onclick="logout()" class="btn-danger small" style="margin: 0;">Cerrar Sesión</button>
             </div>
-            </div>
         </header>
 
         <div id="pageAlert" class="page-alert hidden">
